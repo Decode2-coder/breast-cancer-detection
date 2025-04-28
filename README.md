@@ -19,25 +19,36 @@ Secure report download functionality
 🖥️ Tech Stack
 Frontend: HTML, CSS, JavaScript (Jinja2 templating)
 
+
 Backend: Flask, TensorFlow (Keras 3.x), Web3.py
+
 
 Blockchain Integration: MetaMask, Web3.js
 
+
 Database: SQLite (for prediction logs)
+
 
 Other Tools: Chart.js for visualization, TFSMLayer for TensorFlow SavedModel loading
 
 ⚙️ Installation
 Clone the repository:
+
 git clone https://github.com/yourusername/breast-cancer-detection.git
+
 cd breast-cancer-detection
 
 Create a virtual environment:
+
 python -m venv venv
+
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
+
 Install dependencies:
+
 pip install -r requirements.txt
+
 
 Run the application:
 python run.py
