@@ -1,0 +1,28 @@
+# Ignore virtual environments
+venv/
+ENV/
+env/
+.VENV/
+.VSCodeCounter/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.so
+
+# Ignore Jupyter Notebook checkpoints (if any)
+.ipynb_checkpoints
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore compiled TensorFlow saved models (optional)
+saved_model.pb
+converted_model/
+
+# Ignore SQLite database (if you don't want to upload it)
+*.db
+
+# Other
+*.log

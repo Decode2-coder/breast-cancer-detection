@@ -1,0 +1,187 @@
+{% extends "layout.html" %} {% block title %}Prediction History{% endblock %} {%
+block content %}
+<section class="hero">
+  <div class="hero-content" style="animation: fadeInDown 0.6s ease-out">
+    <h1>Prediction History Logs</h1>
+    <p>
+      Below is the record of all submitted predictions with their results and
+      confidence scores.
+    </p>
+  </div>
+</section>
+
+<section class="upload-section" style="animation: fadeInUp 0.8s ease-in">
+  {% if history_logs %}
+  <div style="overflow-x: auto; padding: 1rem">
+    <table
+      style="
+        width: 100%;
+        border-collapse: collapse;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <thead>
+        <tr style="background-color: #f5f5f5">
+          <th style="padding: 10px; border: 1px solid #ccc">#</th>
+          <th style="padding: 10px; border: 1px solid #ccc">Timestamp</th>
+          <th style="padding: 10px; border: 1px solid #ccc">Filename</th>
+          <th style="padding: 10px; border: 1px solid #ccc">Image Type</th>
+          <th style="padding: 10px; border: 1px solid #ccc">Prediction</th>
+          <th style="padding: 10px; border: 1px solid #ccc">Confidence (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in history_logs %}
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ccc">
+            {{ loop.index }}
+          </td>
+          <td style="padding: 10px; border: 1px solid #ccc">
+            {{ entry.timestamp }}
+          </td>
+          <td style="padding: 10px; border: 1px solid #ccc">
+            {{ entry.filename }}
+          </td>
+          <td style="padding: 10px; border: 1px solid #ccc">
+            {{ entry.image_type|capitalize }}
+          </td>
+          <td style="padding: 10px; border: 1px solid #ccc">
+            {{ entry.prediction }}
+          </td>
+          <td style="padding: 10px; border: 1px solid #ccc">
+            {{ entry.confidence }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Charts Section -->
+  <div
+    style="
+      margin: 3rem auto 5rem auto;
+      padding-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      animation: fadeIn 1s ease-in-out;
+    "
+  >
+    <div
+      style="
+        flex: 1 1 400px;
+        max-width: 600px;
+        height: 350px;
+        margin-bottom: 2rem;
+      "
+    >
+      <h2 style="text-align: center">Prediction Counts</h2>
+      <div style="height: 100%"><canvas id="barChart"></canvas></div>
+    </div>
+    <div
+      style="
+        flex: 1 1 400px;
+        max-width: 600px;
+        height: 350px;
+        margin-bottom: 2rem;
+      "
+    >
+      <h2 style="text-align: center">Confidence Trends</h2>
+      <div style="height: 100%"><canvas id="lineChart"></canvas></div>
+    </div>
+  </div>
+  {% else %}
+  <p style="text-align: center; font-size: 1.1rem">
+    No predictions have been logged yet.
+  </p>
+  {% endif %}
+</section>
+{% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @keyframes fadeInDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+<script>
+  {% if history_logs %}
+  const labels = {{ history_logs|map(attribute='timestamp')|list|tojson }};
+  const confidences = {{ history_logs|map(attribute='confidence')|list|tojson }};
+  const classes = {{ history_logs|map(attribute='prediction')|list|tojson }};
+
+  const benignCount = classes.filter(c => c.toLowerCase() === 'benign').length;
+  const malignantCount = classes.filter(c => c.toLowerCase() === 'malignant').length;
+
+  new Chart(document.getElementById("barChart"), {
+    type: 'bar',
+    data: {
+      labels: ['Benign', 'Malignant'],
+      datasets: [{
+        label: 'Prediction Count',
+        data: [benignCount, malignantCount],
+        backgroundColor: ['#4CAF50', '#F44336']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+
+  new Chart(document.getElementById("lineChart"), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Confidence Over Time',
+        data: confidences,
+        borderColor: '#2196F3',
+        fill: false,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+  {% endif %}
+</script>
+{% endblock %}

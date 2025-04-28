@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Breast Cancer Detection{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="navbar">
+      <div class="navbar-brand">
+        <img
+          src="{{ url_for('static', filename='images/logo.png') }}"
+          alt="Logo"
+        />
+        <span>Health AI</span>
+      </div>
+      <nav>
+        <ul class="navbar-menu">
+          <li><a href="{{ url_for('main.index') }}">Home</a></li>
+          <li><a href="{{ url_for('main.history') }}">History Logs</a></li>
+          <li><a href="{{ url_for('main.project') }}">Project</a></li>
+
+          {% if session.get("org_name") %}
+          <li style="margin-left: auto; padding-right: 10px; color: white">
+            <strong>Org:</strong> {{ session["org_name"] }}
+          </li>
+          {% endif %} {% if session.get("wallet") %}
+          <li style="padding-right: 10px; color: white">
+            <strong>Wallet:</strong> {{ session["wallet"][:6] }}...{{
+            session["wallet"][-4:] }}
+          </li>
+          <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>{% block content %}{% endblock %}</main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>
+        &copy; 2025 Breast Cancer Detection | Federated Learning + Blockchain
+      </p>
+    </footer>
+
+    <!-- Scripts -->
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

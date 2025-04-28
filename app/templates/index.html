@@ -1,0 +1,154 @@
+{% extends "layout.html" %} {% block title %}Breast Cancer Detection{% endblock
+%} {% block content %}
+<main class="hero">
+  <div class="hero-content">
+    <h1>AI-Based Breast Cancer Detection</h1>
+    <p>
+      Upload your data to get predictions powered by secure Federated Learning.
+    </p>
+    <a href="#upload" class="cta-button">Get Started</a>
+  </div>
+</main>
+
+<section id="upload" class="upload-section">
+  <h2>Upload Your Report</h2>
+  <form
+    method="POST"
+    enctype="multipart/form-data"
+    action="{{ url_for('main.index') }}"
+  >
+    <input type="file" name="image" required />
+
+    <label for="image_type">Select Image Type:</label>
+    <select name="image_type" required>
+      <option value="">--Select Type--</option>
+      <option value="histopathology">Histopathology</option>
+      <option value="mammography">Mammography</option>
+      <option value="ultrasound">Ultrasound</option>
+    </select>
+
+    <button type="submit">Submit</button>
+  </form>
+</section>
+
+{% if prediction %}
+<section class="result-section" style="padding: 2rem 1rem">
+  <h2 style="text-align: center">Prediction Result</h2>
+  <div
+    style="
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    "
+  >
+    {% if filename %}
+    <div
+      style="
+        flex: 1;
+        min-width: 280px;
+        max-width: 400px;
+        display: flex;
+        justify-content: center;
+      "
+    >
+      <img
+        src="{{ url_for('main.uploaded_file', filename=filename) }}"
+        alt="Uploaded Image"
+        style="
+          width: 100%;
+          height: auto;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        "
+      />
+    </div>
+    {% endif %}
+
+    <div
+      style="
+        flex: 1;
+        min-width: 280px;
+        max-width: 400px;
+        padding: 1.5rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <p style="font-size: 18px">
+        <strong>Prediction:</strong> {{ prediction }}
+      </p>
+      <p style="font-size: 18px">
+        <strong>Confidence:</strong> {{ confidence }}%
+      </p>
+
+      <div style="max-width: 280px; margin: 1rem auto">
+        <canvas id="confidenceChart"></canvas>
+      </div>
+
+      <div style="text-align: center; margin-top: 1rem">
+        <button
+          onclick="window.print()"
+          style="
+            padding: 0.6rem 1.4rem;
+            background-color: #00c8ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 200, 255, 0.3);
+          "
+        >
+          Download Report as PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %} {% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  {% if prediction %}
+  const ctx = document.getElementById('confidenceChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Confidence', 'Remaining'],
+      datasets: [{
+        data: [{{ confidence }}, {{ 100 - confidence }}],
+        backgroundColor: ['#00c8ff', '#eee'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: '#333',
+            font: {
+              size: 14
+            }
+          }
+        }
+      },
+      cutout: '65%',
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+  {% endif %}
+</script>
+{% endblock %} {% block navbar_extra %} {% if 'wallet' in session %}
+<li style="margin-left: auto; padding-right: 10px">
+  <strong style="color: white">Wallet:</strong>
+  <span style="color: white"
+    >{{ session['wallet'][:6] }}...{{ session['wallet'][-4:] }}</span
+  >
+</li>
+<li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+{% endif %} {% endblock %}

@@ -1,0 +1,9 @@
+Flask
+tensorflow
+web3
+numpy
+Pillow
+sqlite3
+Werkzeug
+chart.js
+gunicorn  # (optional if you deploy later)
